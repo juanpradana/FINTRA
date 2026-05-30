@@ -1,0 +1,14 @@
+[Unit]
+Description=Fintra Telegram Bot
+After=network.target
+
+[Service]
+Type=simple
+User=fintra
+WorkingDirectory=/home/fintra/fintra
+ExecStart=/home/fintra/fintra/venv/bin/python -m bot
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
