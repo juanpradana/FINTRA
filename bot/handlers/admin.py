@@ -16,7 +16,7 @@ async def add_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     args = context.args
     if len(args) < 1:
-        await update.message.reply_text("Usage: /add <telegram_id> [username]")
+        await update.message.reply_text("Usage: /add &lt;telegram_id&gt; [username]")
         return
     telegram_id = args[0]
     username = args[1] if len(args) > 1 else "unknown"
@@ -28,7 +28,7 @@ async def remove_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     args = context.args
     if len(args) < 1:
-        await update.message.reply_text("Usage: /remove <telegram_id>")
+        await update.message.reply_text("Usage: /remove &lt;telegram_id&gt;")
         return
     telegram_id = args[0]
     if telegram_id == SUPERADMIN_ID:
@@ -44,7 +44,7 @@ async def list_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not users:
         await update.message.reply_text("Tidak ada pengguna terdaftar.")
         return
-    lines = ["📋 <b>Daftar Pengguna Terdaftar:</b>\n"]
+    lines = ["📋 <b>Daftar Pengguna Terdaftar:</b>"]
     for u in users:
         lines.append(f"• <code>{u['telegram_id']}</code> | @{u['username']} | {u['role']} | Kuota: {u['daily_usage']}/50")
     await update.message.reply_text("\n".join(lines), parse_mode="HTML")

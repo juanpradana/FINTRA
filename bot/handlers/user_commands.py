@@ -17,6 +17,9 @@ def _get_keyboard(user_id: str) -> ReplyKeyboardMarkup:
         resize_keyboard=True,
     )
 
+def _esc(text: str) -> str:
+    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     ensure_superadmin(SUPERADMIN_ID, SUPERADMIN_USERNAME)
@@ -25,11 +28,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("⛔ Anda belum terdaftar di Fintra. Hubungi Superadmin untuk mendapatkan akses.")
         return
     await update.message.reply_text(
-        f"👋 Selamat datang di **Fintra**, {user.first_name}!\n\n"
+        f"👋 Selamat datang di <b>Fintra</b>, {_esc(user.first_name)}!\n\n"
         "Cukup ketik pesan teks biasa untuk mencatat transaksi keuangan.\n"
-        "Contoh: *'beli bakso 25 ribu tadi siang'*\n\n"
+        "Contoh: <i>'beli bakso 25 ribu tadi siang'</i>\n\n"
         "Gunakan tombol di bawah untuk perintah cepat.",
-        parse_mode="Markdown",
+        parse_mode="HTML",
         reply_markup=_get_keyboard(user_id),
     )
 
@@ -38,23 +41,23 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not queries.is_whitelisted(user_id):
         return
     await update.message.reply_text(
-        "ℹ️ **Fintra Help Desk & Documentation**\n\n"
+        "ℹ️ <b>Fintra Help Desk &amp; Documentation</b>\n\n"
         "Cukup ketik pesan teks biasa tanpa command untuk mencatat keuangan secara otomatis.\n\n"
-        "🔒 **Batasan Penggunaan (Anti-Spam):**\n"
+        "🔒 <b>Batasan Penggunaan (Anti-Spam):</b>\n"
         "• Maksimal 5 pesan / menit.\n"
         "• Maksimal 50 transaksi / hari.\n\n"
-        "💡 **Contoh Input:**\n"
-        "• *'beli bakso 25 ribu tadi siang'*\n"
-        "• *'kemarin sore bayar cicilan motor 1.5 juta'*\n\n"
-        "📂 **Kategori Valid:**\n"
-        "`makanan`, `transportasi`, `hiburan`, `tagihan`, `investasi`, `lainnya`.\n\n"
-        "🛠️ **Daftar Perintah:**\n"
+        "💡 <b>Contoh Input:</b>\n"
+        "• <i>'beli bakso 25 ribu tadi siang'</i>\n"
+        "• <i>'kemarin sore bayar cicilan motor 1.5 juta'</i>\n\n"
+        "📂 <b>Kategori Valid:</b>\n"
+        "<code>makanan</code>, <code>transportasi</code>, <code>hiburan</code>, <code>tagihan</code>, <code>investasi</code>, <code>lainnya</code>.\n\n"
+        "🛠️ <b>Daftar Perintah:</b>\n"
         "/saldo - Cek akumulasi sisa dana saat ini.\n"
-        "/laporan - Unduh rekap laporan Excel & PDF bulan berjalan.\n"
+        "/laporan - Unduh rekap laporan Excel &amp; PDF bulan berjalan.\n"
         "/batal - Menghapus catatan transaksi terakhir Anda.\n"
         "---------------------------------------\n"
-        "✒️ *Fintra Version 1.6 | Created by Farzani R.B.A.*",
-        parse_mode="Markdown",
+        "✒️ <i>Fintra Version 1.6 | Created by Farzani R.B.A.</i>",
+        parse_mode="HTML",
         reply_markup=_get_keyboard(user_id),
     )
 
@@ -64,7 +67,7 @@ async def saldo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     balance = queries.get_balance(user_id)
     formatted = f"Rp{balance:,}".replace(",", ".")
-    await update.message.reply_text(f"💰 **Saldo Anda:** {formatted}", parse_mode="Markdown")
+    await update.message.reply_text(f"💰 <b>Saldo Anda:</b> {formatted}", parse_mode="HTML")
 
 async def laporan(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = str(update.effective_user.id)
@@ -103,9 +106,8 @@ async def batal(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("📭 Tidak ada transaksi yang bisa dibatalkan.")
         return
     queries.delete_transaction(last["id"], user_id)
+    formatted = f"Rp{last['nominal']:,}".replace(",", ".")
     await update.message.reply_text(
         f"✅ Transaksi terakhir berhasil dibatalkan:\n"
-        f"• {last['type'].capitalize()}: Rp{last['nominal']:,} ({last['category']})"
-        .replace(",", "."),
-        parse_mode="Markdown",
+        f"• {last['type'].capitalize()}: {formatted} ({last['category']})"
     )

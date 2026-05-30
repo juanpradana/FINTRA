@@ -13,18 +13,27 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if not check_burst(user_id):
-        await update.message.reply_text("⚠️ **Mencatat Terlalu Cepat!** Batas maksimal input adalah 5 pesan per menit untuk menjaga stabilitas sistem. Silakan tunggu beberapa saat lagi.", parse_mode="Markdown")
+        await update.message.reply_text(
+            "⚠️ <b>Mencatat Terlalu Cepat!</b> Batas maksimal input adalah 5 pesan per menit untuk menjaga stabilitas sistem. Silakan tunggu beberapa saat lagi.",
+            parse_mode="HTML",
+        )
         return
 
     if not check_daily(user_id):
-        await update.message.reply_text("⚠️ **Kuota Harian Habis!** Anda telah mencapai batas 50 transaksi hari ini. Silakan tunggu hingga reset pukul 00:00 WIB.", parse_mode="Markdown")
+        await update.message.reply_text(
+            "⚠️ <b>Kuota Harian Habis!</b> Anda telah mencapai batas 50 transaksi hari ini. Silakan tunggu hingga reset pukul 00:00 WIB.",
+            parse_mode="HTML",
+        )
         return
 
     result = parse_transaction(text)
 
     if "error" in result:
         if result["error"] == "out_of_domain":
-            await update.message.reply_text("❌ **Akses Ditolak.** Sistem Fintra hanya menerima input terkait pencatatan transaksi keuangan dan analisis anggaran.", parse_mode="Markdown")
+            await update.message.reply_text(
+                "❌ <b>Akses Ditolak.</b> Sistem Fintra hanya menerima input terkait pencatatan transaksi keuangan dan analisis anggaran.",
+                parse_mode="HTML",
+            )
         else:
             await update.message.reply_text("⚠️ Maaf, terjadi kesalahan saat memproses pesan Anda. Silakan coba lagi.")
         return
@@ -43,9 +52,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     formatted_nominal = f"Rp{result['nominal']:,}".replace(",", ".")
     emoji = "📥" if result["type"] == "pemasukan" else "📤"
     await update.message.reply_text(
-        f"{emoji} **Transaksi Tercatat!**\n"
+        f"{emoji} <b>Transaksi Tercatat!</b>\n"
         f"• {result['type'].capitalize()}: {formatted_nominal}\n"
         f"• Kategori: {result['category']}\n"
         f"• Tanggal: {result['transaction_date']}",
-        parse_mode="Markdown",
+        parse_mode="HTML",
     )
