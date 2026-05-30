@@ -53,10 +53,10 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "<code>makanan</code>, <code>transportasi</code>, <code>hiburan</code>, <code>tagihan</code>, <code>investasi</code>, <code>lainnya</code>.\n\n"
         "🛠️ <b>Daftar Perintah:</b>\n"
         "/saldo - Cek akumulasi sisa dana saat ini.\n"
-        "/laporan - Unduh rekap laporan Excel &amp; PDF bulan berjalan.\n"
+        "/laporan - Analisis AI + unduh rekap Excel &amp; PDF bulan berjalan.\n"
         "/batal - Menghapus catatan transaksi terakhir Anda.\n"
         "---------------------------------------\n"
-        "✒️ <i>Fintra Version 1.6 | Created by Farzani R.B.A.</i>",
+        "✒️ <i>Fintra Version 1.7 | Created by Farzani R.B.A.</i>",
         parse_mode="HTML",
         reply_markup=_get_keyboard(user_id),
     )
