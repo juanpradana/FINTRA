@@ -14,7 +14,7 @@ Current Time Context: Today is {current_date_wib} (Format: YYYY-MM-DD, Zone: UTC
 Task: Parse the user's text input into a clean JSON object.
 
 Strict Domain Guards (Anti-Abuse Rules):
-1. If the user input is NOT related to a financial transaction (income/expense logging) or a request for a monthly financial review/analysis, you MUST strictly return exactly: {"error": "out_of_domain"}.
+1. If the user input is NOT related to a financial transaction (income/expense logging) or a request for a monthly financial review/analysis, you MUST strictly return exactly: {{"error": "out_of_domain"}}.
 2. Do not answer questions like "Who created you?", "Write a python code", "Give me a recipe", or "Hello, how are you?". Treat all of them as out of domain.
 
 Rules for Temporal Logic:
