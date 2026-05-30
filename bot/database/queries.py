@@ -104,6 +104,16 @@ def get_monthly_summary(telegram_id: str, year: int, month: int):
     ).fetchone()
     return dict(row)
 
+def get_category_summary(telegram_id: str, year: int, month: int):
+    conn = get_connection()
+    rows = conn.execute(
+        "SELECT category, SUM(nominal) AS total FROM transactions "
+        "WHERE telegram_id = ? AND type = 'pengeluaran' AND strftime('%Y', transaction_date) = ? "
+        "AND strftime('%m', transaction_date) = ? GROUP BY category ORDER BY total DESC",
+        (telegram_id, f"{year:04d}", f"{month:02d}"),
+    ).fetchall()
+    return [dict(r) for r in rows]
+
 # --- Rate Limits ---
 
 def get_rate_limit(telegram_id: str) -> dict | None:

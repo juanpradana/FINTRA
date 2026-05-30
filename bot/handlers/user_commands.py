@@ -85,6 +85,14 @@ async def laporan(update: Update, context: ContextTypes.DEFAULT_TYPE):
     summary = queries.get_monthly_summary(user_id, now.year, now.month)
     username = update.effective_user.first_name or "User"
 
+    await update.message.reply_text("📊 Menyusun laporan...")
+
+    from bot.services.llm_client import generate_report_analysis
+    category_summary = queries.get_category_summary(user_id, now.year, now.month)
+    month_name = now.strftime("%B %Y")
+    analysis = generate_report_analysis(summary, category_summary, month_name)
+    await update.message.reply_text(f"🧠 <b>Analisis Keuangan {month_name}</b>\n\n{analysis}", parse_mode="HTML")
+
     from bot.services.report import generate_excel, generate_pdf
     import tempfile, os
 
