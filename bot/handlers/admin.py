@@ -44,7 +44,7 @@ async def list_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not users:
         await update.message.reply_text("Tidak ada pengguna terdaftar.")
         return
-    lines = ["📋 **Daftar Pengguna Terdaftar:**\n"]
+    lines = ["📋 <b>Daftar Pengguna Terdaftar:</b>\n"]
     for u in users:
-        lines.append(f"• `{u['telegram_id']}` | @{u['username']} | {u['role']} | Kuota: {u['daily_usage']}/50")
-    await update.message.reply_text("\n".join(lines), parse_mode="Markdown")
+        lines.append(f"• <code>{u['telegram_id']}</code> | @{u['username']} | {u['role']} | Kuota: {u['daily_usage']}/50")
+    await update.message.reply_text("\n".join(lines), parse_mode="HTML")

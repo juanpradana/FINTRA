@@ -1,5 +1,5 @@
 from datetime import datetime
-from telegram import Update
+from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ContextTypes
 from bot.database import queries
 from bot.database.queries import ensure_superadmin
@@ -7,22 +7,35 @@ from bot.config import SUPERADMIN_ID, SUPERADMIN_USERNAME
 import pytz
 from bot.config import TIMEZONE
 
+_COMMON_BUTTONS = [["/saldo", "/laporan"], ["/batal", "/help"]]
+_SUPERADMIN_BUTTONS = [["/add", "/remove", "/listuser"], ["/saldo", "/laporan"], ["/batal", "/help"]]
+
+def _get_keyboard(user_id: str) -> ReplyKeyboardMarkup:
+    is_super = user_id == SUPERADMIN_ID
+    return ReplyKeyboardMarkup(
+        _SUPERADMIN_BUTTONS if is_super else _COMMON_BUTTONS,
+        resize_keyboard=True,
+    )
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     ensure_superadmin(SUPERADMIN_ID, SUPERADMIN_USERNAME)
-    if not queries.is_whitelisted(str(user.id)):
+    user_id = str(user.id)
+    if not queries.is_whitelisted(user_id):
         await update.message.reply_text("⛔ Anda belum terdaftar di Fintra. Hubungi Superadmin untuk mendapatkan akses.")
         return
     await update.message.reply_text(
         f"👋 Selamat datang di **Fintra**, {user.first_name}!\n\n"
         "Cukup ketik pesan teks biasa untuk mencatat transaksi keuangan.\n"
         "Contoh: *'beli bakso 25 ribu tadi siang'*\n\n"
-        "Ketik /help untuk bantuan lebih lanjut.",
+        "Gunakan tombol di bawah untuk perintah cepat.",
         parse_mode="Markdown",
+        reply_markup=_get_keyboard(user_id),
     )
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not queries.is_whitelisted(str(update.effective_user.id)):
+    user_id = str(update.effective_user.id)
+    if not queries.is_whitelisted(user_id):
         return
     await update.message.reply_text(
         "ℹ️ **Fintra Help Desk & Documentation**\n\n"
@@ -42,6 +55,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "---------------------------------------\n"
         "✒️ *Fintra Version 1.6 | Created by Farzani R.B.A.*",
         parse_mode="Markdown",
+        reply_markup=_get_keyboard(user_id),
     )
 
 async def saldo(update: Update, context: ContextTypes.DEFAULT_TYPE):
