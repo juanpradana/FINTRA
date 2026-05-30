@@ -83,6 +83,43 @@ pytest
 
 ---
 
+## Migrasi Database (Pindah Mesin)
+
+SQLite Fintra tersimpan di satu file: `data/fintra.db`. Cukup salin file itu ke mesin baru.
+
+### Backup (dari mesin lama)
+
+```bash
+# Docker
+cp data/fintra.db data/fintra_backup_$(date +%Y%m%d).db
+
+# Atau jalankan script built-in
+python scripts/backup_db.py
+```
+
+### Restore (ke mesin baru)
+
+```bash
+# 1. Clone & setup seperti Quick Start di atas
+git clone https://github.com/juanpradana/FINTRA.git
+cd FINTRA
+cp .env.example .env
+# Isi .env dengan kredensial yang SAMA
+
+# 2. Hentikan bot jika sedang berjalan
+docker compose down
+
+# 3. Copy file database lama ke folder data/
+cp /path/ke/fintra.db data/fintra.db
+
+# 4. Jalankan ulang bot
+docker compose up -d
+```
+
+> Semua data transaksi, whitelist user, dan rate limit akan langsung tersedia.
+
+---
+
 ## Commands
 
 | Perintah | Akses | Fungsi |
