@@ -2,7 +2,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://python.org)
 [![Telegram Bot](https://img.shields.io/badge/Telegram-Bot-26A5E4)](https://core.telegram.org/bots)
-[![Gemini AI](https://img.shields.io/badge/Gemini-AI-4285F4)](https://ai.google.dev/)
+[![Groq](https://img.shields.io/badge/Groq-LLM-F55036)](https://groq.com)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 **Fintra** adalah bot Telegram berbasis AI yang berfungsi sebagai asisten pencatatan keuangan pribadi. Cukup ketik pesan teks biasa, dan AI akan mengekstrak transaksi secara otomatis — tanpa formulir, tanpa ribet.
@@ -20,7 +20,7 @@
 - **👥 Multi-User** — Whitelist system dengan peran Superadmin & User
 - **📊 Laporan Instan** — Generate Excel (.xlsx) & PDF langsung dari Telegram
 - **🔄 Auto Backup** — Backup database setiap hari pukul 00:00 WIB
-- **💰 Zero Operating Cost** — 100% gratis (Telegram API + Gemini Free Tier + SQLite)
+- **💰 Zero Operating Cost** — 100% gratis (Telegram API + Groq Free Tier + SQLite)
 
 ---
 
@@ -30,7 +30,7 @@
 |---|---|
 | Runtime | Python 3.10+ |
 | Bot Framework | python-telegram-bot 21.x |
-| AI/NLP | Google Gemini API (gemini-2.0-flash) |
+| AI/NLP | Groq LLM (llama-3.1-8b-instant) |
 | Database | SQLite (WAL mode) |
 | Reports | openpyxl (Excel) + fpdf2 (PDF) |
 | Scheduler | APScheduler |
@@ -47,7 +47,7 @@ Sebelum mulai, siapkan 3 kredensial berikut:
 | Variabel | Cara Mendapatkan |
 |---|---|
 | `BOT_TOKEN` | Buka Telegram, cari [@BotFather](https://t.me/BotFather), kirim `/newbot`, ikuti petunjuk, salin token yang diberikan |
-| `GEMINI_API_KEY` | Buka [Google AI Studio](https://aistudio.google.com/apikey), klik **Create API Key**, pilih atau buat project, salin key |
+| `GROQ_API_KEY` | Buka [Groq Console](https://console.groq.com/keys), klik **Create API Key**, salin key |
 | `SUPERADMIN_ID` | Buka Telegram, cari [@userinfobot](https://t.me/userinfobot), kirim `/start`, dapatkan ID numerik Anda (contoh: `123456789`) |
 
 ### 1. Setup

@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BOT_TOKEN: str = os.getenv("BOT_TOKEN", "")
-GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
+GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
 SUPERADMIN_ID: str = os.getenv("SUPERADMIN_ID", "")
 SUPERADMIN_USERNAME: str = os.getenv("SUPERADMIN_USERNAME", "")
 DB_PATH: str = os.getenv("DB_PATH", "data/fintra.db")

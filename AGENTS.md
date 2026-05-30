@@ -1,7 +1,7 @@
 # Fintra — Finance Tracker Telegram Bot
 
 ## Stack
-Python 3.10+, python-telegram-bot 21.x, Gemini AI API, SQLite, APScheduler.
+Python 3.10+, python-telegram-bot 21.x, Groq LLM API, SQLite, APScheduler.
 
 ## Entrypoint
 ```
@@ -17,7 +17,7 @@ Registered in `bot/__main__.py`. All handlers wired there.
 | `bot/database/connection.py` | SQLite init + singleton connection (WAL mode) |
 | `bot/database/queries.py` | All parameterized SQL — **every read/write has `WHERE telegram_id = ?`** (multi-tenant isolation) |
 | `bot/services/rate_limiter.py` | In-memory token bucket (burst) + DB-backed daily counter |
-| `bot/services/gemini_client.py` | Gemini call with PRD Section 6 exact prompt |
+| `bot/services/llm_client.py` | Groq (llama-3.1-8b-instant) call with PRD Section 6 exact prompt |
 | `bot/services/report.py` | Excel (openpyxl) + PDF (fpdf2) generator |
 | `bot/handlers/` | Command & message handlers |
 | `scripts/backup_db.py` | Standalone DB backup script |
@@ -28,8 +28,8 @@ Registered in `bot/__main__.py`. All handlers wired there.
 - **Exempt:** `/add`, `/remove`, `/listuser` (admin commands only)
 - Reset daily limits + backup DB at 00:00 WIB (APScheduler cron)
 
-## Gemini Prompt
-Exact prompt in `gemini_client.py` from PRD Section 6. Key behaviors:
+## LLM Prompt
+Exact prompt in `llm_client.py` from PRD Section 6. Key behaviors:
 - Rejects non-financial input → returns `{"error": "out_of_domain"}`
 - Parses relative dates ("kemarin", "dua hari lalu") relative to UTC+7 today
 - Output: raw JSON only (`{"type","nominal","category","note","transaction_date"}`)

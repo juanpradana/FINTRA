@@ -1,16 +1,20 @@
 import json
-import google.generativeai as genai
+import logging
 from datetime import datetime
-from bot.config import GEMINI_API_KEY, TIMEZONE
+from groq import Groq
+from groq.types.chat import ChatCompletion
+from bot.config import GROQ_API_KEY, TIMEZONE
 import pytz
 
-SYSTEM_PROMPT_TEMPLATE = """Context: You are a strict, single-purpose financial data extraction engine. You are not allowed to chat, converse, or answer questions outside personal financial tracking and financial analysis.
+logger = logging.getLogger(__name__)
+
+SYSTEM_PROMPT_TEMPLATE = """You are a strict, single-purpose financial data extraction engine for FINTRA (Finance Tracker). You are not allowed to chat, converse, or answer questions outside personal financial tracking and financial analysis.
 Current Time Context: Today is {current_date_wib} (Format: YYYY-MM-DD, Zone: UTC+7).
 
 Task: Parse the user's text input into a clean JSON object.
 
 Strict Domain Guards (Anti-Abuse Rules):
-1. If the user input is NOT related to a financial transaction (income/expense logging) or a request for a monthly financial review/analysis, you MUST strictly return exactly: {{"error": "out_of_domain"}}.
+1. If the user input is NOT related to a financial transaction (income/expense logging) or a request for a monthly financial review/analysis, you MUST strictly return exactly: {"error": "out_of_domain"}.
 2. Do not answer questions like "Who created you?", "Write a python code", "Give me a recipe", or "Hello, how are you?". Treat all of them as out of domain.
 
 Rules for Temporal Logic:
@@ -29,30 +33,35 @@ Schema for Valid Transaction:
   "transaction_date": "YYYY-MM-DD"
 }}"""
 
+client = Groq(api_key=GROQ_API_KEY)
+
 def _get_current_date_wib() -> str:
     tz = pytz.timezone(TIMEZONE)
     return datetime.now(tz).strftime("%Y-%m-%d")
 
 def parse_transaction(user_text: str) -> dict:
-    genai.configure(api_key=GEMINI_API_KEY)
-    model = genai.GenerativeModel("gemini-1.5-flash")
-
     current_date = _get_current_date_wib()
     system_prompt = SYSTEM_PROMPT_TEMPLATE.format(current_date_wib=current_date)
 
-    response = model.generate_content(
-        [system_prompt, user_text],
-        generation_config=genai.types.GenerationConfig(
-            temperature=0.1,
-            max_output_tokens=200,
-        ),
-    )
-
-    raw = response.text.strip()
-    if raw.startswith("```"):
-        raw = raw.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
-
     try:
+        response: ChatCompletion = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_text},
+            ],
+            temperature=0.1,
+            max_tokens=200,
+            response_format={"type": "json_object"},
+        )
+
+        raw = response.choices[0].message.content.strip()
+
+        if raw.startswith("```"):
+            raw = raw.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+
         return json.loads(raw)
-    except json.JSONDecodeError:
-        return {"error": "parse_failed", "raw": raw}
+
+    except Exception as e:
+        logger.error(f"LLM error: {e}")
+        return {"error": "llm_failed"}

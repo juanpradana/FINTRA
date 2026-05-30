@@ -2,7 +2,7 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from bot.database import queries
 from bot.services.rate_limiter import check_burst, check_daily, record_request, is_admin_command
-from bot.services.gemini_client import parse_transaction
+from bot.services.llm_client import parse_transaction
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
