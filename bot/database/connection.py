@@ -33,7 +33,7 @@ def init_db():
             nominal INTEGER NOT NULL,
             category TEXT NOT NULL CHECK (category IN ('makanan', 'transportasi', 'hiburan', 'tagihan', 'investasi', 'lainnya')),
             note TEXT,
-            transaction_date DATE NOT NULL,
+            transaction_date TEXT NOT NULL,
             FOREIGN KEY (telegram_id) REFERENCES whitelist_users(telegram_id)
         );
 

@@ -51,10 +51,14 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     formatted_nominal = f"Rp{result['nominal']:,}".replace(",", ".")
     emoji = "📥" if result["type"] == "pemasukan" else "📤"
+    t = result['transaction_date']
+    date_part = t[:10]
+    time_part = t[11:16] if len(t) > 10 else "00:00"
     await update.message.reply_text(
         f"{emoji} <b>Transaksi Tercatat!</b>\n"
         f"• {result['type'].capitalize()}: {formatted_nominal}\n"
         f"• Kategori: {result['category']}\n"
-        f"• Tanggal: {result['transaction_date']}",
+        f"• Tanggal: {date_part}\n"
+        f"• Jam: {time_part} WIB",
         parse_mode="HTML",
     )

@@ -9,7 +9,7 @@ import pytz
 logger = logging.getLogger(__name__)
 
 SYSTEM_PROMPT_TEMPLATE = """You are a strict, single-purpose financial data extraction engine for FINTRA (Finance Tracker). You are not allowed to chat, converse, or answer questions outside personal financial tracking and financial analysis.
-Current Time Context: Today is {current_date_wib} (Format: YYYY-MM-DD, Zone: UTC+7).
+Current Time Context: Today is {current_date_wib} (Format: YYYY-MM-DD HH:MM, Zone: UTC+7).
 
 Task: Parse the user's text input into a clean JSON object.
 
@@ -18,8 +18,9 @@ Strict Domain Guards (Anti-Abuse Rules):
 2. Do not answer questions like "Who created you?", "Write a python code", "Give me a recipe", or "Hello, how are you?". Treat all of them as out of domain.
 
 Rules for Temporal Logic:
-1. Calculate the 'transaction_date' dynamically based on the Current Time Context.
+1. Calculate the 'transaction_date' dynamically based on the Current Time Context, output format must be "YYYY-MM-DD HH:MM".
 2. If relative time words are used (e.g., 'kemarin'), subtract 1 day from {current_date_wib}. If 'dua hari lalu', subtract 2 days.
+3. If the user mentions time (e.g., 'jam 2', 'tadi siang', 'pagi', 'sore'), infer the hour and minute accordingly. If no time is mentioned, use the current time from Current Time Context.
 
 General Output Rules:
 1. Do not include any conversational text, explanations, or markdown code block ticks. Return ONLY raw JSON string.
@@ -30,14 +31,14 @@ Schema for Valid Transaction:
   "nominal": integer,
   "category": "makanan" | "transportasi" | "hiburan" | "tagihan" | "investasi" | "lainnya",
   "note": "string detailing the item",
-  "transaction_date": "YYYY-MM-DD"
+  "transaction_date": "YYYY-MM-DD HH:MM"
 }}"""
 
 client = Groq(api_key=GROQ_API_KEY)
 
 def _get_current_date_wib() -> str:
     tz = pytz.timezone(TIMEZONE)
-    return datetime.now(tz).strftime("%Y-%m-%d")
+    return datetime.now(tz).strftime("%Y-%m-%d %H:%M")
 
 def parse_transaction(user_text: str) -> dict:
     current_date = _get_current_date_wib()
