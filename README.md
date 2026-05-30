@@ -30,7 +30,7 @@
 |---|---|
 | Runtime | Python 3.10+ |
 | Bot Framework | python-telegram-bot 21.x |
-| AI/NLP | Google Gemini API (gemini-1.5-flash) |
+| AI/NLP | Google Gemini API (gemini-2.0-flash) |
 | Database | SQLite (WAL mode) |
 | Reports | openpyxl (Excel) + fpdf2 (PDF) |
 | Scheduler | APScheduler |

@@ -41,7 +41,7 @@ def parse_transaction(user_text: str) -> dict:
     system_prompt = SYSTEM_PROMPT_TEMPLATE.format(current_date_wib=current_date)
 
     response = client.models.generate_content(
-        model="gemini-1.5-flash",
+        model="gemini-2.0-flash",
         contents=user_text,
         config=types.GenerateContentConfig(
             system_instruction=system_prompt,
