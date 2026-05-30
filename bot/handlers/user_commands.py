@@ -8,7 +8,7 @@ import pytz
 from bot.config import TIMEZONE
 
 _COMMON_BUTTONS = [["/saldo", "/laporan"], ["/laporan3", "/batal"], ["/help"]]
-_SUPERADMIN_BUTTONS = [["/add", "/remove", "/listuser"], ["/saldo", "/laporan"], ["/batal", "/help"]]
+_SUPERADMIN_BUTTONS = [["/add", "/remove", "/listuser"], ["/saldo", "/laporan"], ["/laporan3", "/batal"], ["/help"]]
 
 def _get_keyboard(user_id: str) -> ReplyKeyboardMarkup:
     is_super = user_id == SUPERADMIN_ID
@@ -54,7 +54,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "🛠️ <b>Daftar Perintah:</b>\n"
         "/saldo - Cek akumulasi sisa dana saat ini.\n"
         "/laporan - Analisis AI + unduh rekap Excel &amp; PDF bulan berjalan.\n"
-"/laporan3 - Analisis AI tren 3 bulan terakhir.\n"
+         "/laporan3 - Analisis AI tren 3 bulan terakhir.\n"
         "/batal - Menghapus catatan transaksi terakhir Anda.\n"
         "---------------------------------------\n"
         "✒️ <i>Fintra Version 1.7 | Created by Farzani R.B.A.</i>",
