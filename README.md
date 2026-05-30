@@ -40,13 +40,23 @@
 
 ## Quick Start
 
+### 0. Dapatkan Kredensial
+
+Sebelum mulai, siapkan 3 kredensial berikut:
+
+| Variabel | Cara Mendapatkan |
+|---|---|
+| `BOT_TOKEN` | Buka Telegram, cari [@BotFather](https://t.me/BotFather), kirim `/newbot`, ikuti petunjuk, salin token yang diberikan |
+| `GEMINI_API_KEY` | Buka [Google AI Studio](https://aistudio.google.com/apikey), klik **Create API Key**, pilih atau buat project, salin key |
+| `SUPERADMIN_ID` | Buka Telegram, cari [@userinfobot](https://t.me/userinfobot), kirim `/start`, dapatkan ID numerik Anda (contoh: `123456789`) |
+
 ### 1. Setup
 
 ```bash
 git clone https://github.com/juanpradana/FINTRA.git
 cd FINTRA
 cp .env.example .env
-# Isi .env dengan BOT_TOKEN, GEMINI_API_KEY, SUPERADMIN_ID
+# Isi .env dengan kredensial dari langkah 0 di atas
 ```
 
 ### 2. Jalankan
