@@ -42,7 +42,7 @@ Registered in `bot/__main__.py`. All handlers wired there.
 - **Parsing prompt** in `llm_client.py` from PRD Section 6. Key behaviors:
   - Rejects non-financial input → returns `{"error": "out_of_domain"}`
   - Parses relative dates ("kemarin", "dua hari lalu") relative to UTC+7 today
-  - Output: raw JSON only (`{"type","nominal","category","note","transaction_date"}`)
+  - Output: raw JSON only (`{"type","nominal","category","note","transaction_date"}`) — kategori: makanan, minuman, transportasi, belanja, hiburan, tagihan, kesehatan, investasi, lainnya
 - **Report prompt** in `llm_client.py` — sends aggregated category data to 17B model for analysis in Bahasa Indonesia (ringkasan, kategori terbesar, pola belanja, saran hemat).
 
 ## Database

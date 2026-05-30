@@ -50,7 +50,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "• <i>'beli bakso 25 ribu tadi siang'</i>\n"
         "• <i>'kemarin sore bayar cicilan motor 1.5 juta'</i>\n\n"
         "📂 <b>Kategori Valid:</b>\n"
-        "<code>makanan</code>, <code>transportasi</code>, <code>hiburan</code>, <code>tagihan</code>, <code>investasi</code>, <code>lainnya</code>.\n\n"
+        "<code>makanan</code>, <code>minuman</code>, <code>transportasi</code>, <code>belanja</code>, <code>hiburan</code>, <code>tagihan</code>, <code>kesehatan</code>, <code>investasi</code>, <code>lainnya</code>.\n\n"
         "🛠️ <b>Daftar Perintah:</b>\n"
         "/saldo - Cek akumulasi sisa dana saat ini.\n"
         "/laporan - Analisis AI + unduh rekap Excel &amp; PDF bulan berjalan.\n"
