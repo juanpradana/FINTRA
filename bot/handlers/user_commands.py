@@ -160,6 +160,9 @@ async def laporan3(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     os.remove(xlsx_path)
     os.remove(pdf_path)
+
+
+async def batal(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = str(update.effective_user.id)
     if not queries.is_whitelisted(user_id):
         return
