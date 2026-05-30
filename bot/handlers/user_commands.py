@@ -65,9 +65,12 @@ async def saldo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = str(update.effective_user.id)
     if not queries.is_whitelisted(user_id):
         return
-    balance = queries.get_balance(user_id)
+    tz = pytz.timezone(TIMEZONE)
+    now = datetime.now(tz)
+    balance = queries.get_balance(user_id, now.year, now.month)
     formatted = f"Rp{balance:,}".replace(",", ".")
-    await update.message.reply_text(f"💰 <b>Saldo Anda:</b> {formatted}", parse_mode="HTML")
+    month_name = now.strftime("%B %Y")
+    await update.message.reply_text(f"💰 <b>Saldo {month_name}:</b> {formatted}", parse_mode="HTML")
 
 async def laporan(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = str(update.effective_user.id)

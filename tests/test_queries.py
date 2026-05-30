@@ -25,8 +25,8 @@ class TestWhitelist:
         queries.add_user("111", "user1", "user")
         queries.add_user("222", "user2", "user")
         queries.insert_transaction("111", "pemasukan", 50000, "makanan", "test", "2025-01-01")
-        balance_111 = queries.get_balance("111")
-        balance_222 = queries.get_balance("222")
+        balance_111 = queries.get_balance("111", 2025, 1)
+        balance_222 = queries.get_balance("222", 2025, 1)
         assert balance_111 == 50000
         assert balance_222 == 0
 
@@ -51,7 +51,7 @@ class TestTransactions:
         queries.add_user("111", "user1", "user")
         queries.insert_transaction("111", "pemasukan", 100000, "lainnya", "gaji", "2025-01-01")
         queries.insert_transaction("111", "pengeluaran", 30000, "makanan", "makan siang", "2025-01-01")
-        assert queries.get_balance("111") == 70000
+        assert queries.get_balance("111", 2025, 1) == 70000
 
     def test_monthly_queries(self):
         queries.add_user("111", "user1", "user")

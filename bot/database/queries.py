@@ -72,13 +72,14 @@ def delete_transaction(transaction_id: int, telegram_id: str):
     )
     conn.commit()
 
-def get_balance(telegram_id: str) -> int:
+def get_balance(telegram_id: str, year: int, month: int) -> int:
     conn = get_connection()
     row = conn.execute(
         "SELECT COALESCE(SUM(CASE WHEN type = 'pemasukan' THEN nominal ELSE 0 END), 0) - "
         "COALESCE(SUM(CASE WHEN type = 'pengeluaran' THEN nominal ELSE 0 END), 0) AS balance "
-        "FROM transactions WHERE telegram_id = ?",
-        (telegram_id,),
+        "FROM transactions WHERE telegram_id = ? AND strftime('%Y', transaction_date) = ? "
+        "AND strftime('%m', transaction_date) = ?",
+        (telegram_id, f"{year:04d}", f"{month:02d}"),
     ).fetchone()
     return row["balance"]
 
