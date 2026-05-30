@@ -19,7 +19,7 @@ async def add_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Usage: /add &lt;telegram_id&gt; [username]")
         return
     telegram_id = args[0]
-    username = args[1] if len(args) > 1 else "unknown"
+    username = args[1].lstrip("@") if len(args) > 1 else "unknown"
     queries.add_user(telegram_id, username, "user")
     await update.message.reply_text(f"✅ Pengguna {telegram_id} telah ditambahkan ke whitelist.")
 
