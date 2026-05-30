@@ -45,7 +45,9 @@ Schema for Valid Transaction:
 {{
   "type": "pemasukan" or "pengeluaran",
   "nominal": integer,
-  "category": "makanan" | "minuman" | "transportasi" | "belanja" | "hiburan" | "tagihan" | "kesehatan" | "investasi" | "lainnya",
+  "category": depends on type —
+    if type is "pemasukan": "gaji" | "freelance" | "bisnis" | "investasi" | "hadiah" | "lainnya",
+    if type is "pengeluaran": "makanan" | "minuman" | "transportasi" | "belanja" | "hiburan" | "tagihan" | "kesehatan" | "investasi" | "lainnya",
   "note": "string detailing the item",
   "transaction_date": "YYYY-MM-DD HH:MM"
 }}"""
