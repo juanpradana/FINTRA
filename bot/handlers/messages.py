@@ -93,3 +93,21 @@ async def _handle_laporan_text(update: Update, user_id: str, text: str):
 
     analysis = generate_report_analysis(summary, category_summary, month_name_str)
     await update.message.reply_text(f"🧠 <b>Analisis {month_name_str}</b>\n\n{analysis}", parse_mode="HTML")
+
+    from bot.services.report import generate_excel, generate_pdf
+    import tempfile, os
+    from datetime import datetime as dt
+
+    xlsx_path = os.path.join(tempfile.gettempdir(), f"fintra_{user_id}_{tahun}{bulan:02d}.xlsx")
+    pdf_path = os.path.join(tempfile.gettempdir(), f"fintra_{user_id}_{tahun}{bulan:02d}.pdf")
+    fake_now = dt(tahun, bulan, 1)
+    username = update.effective_user.first_name or "User"
+
+    generate_excel(xlsx_path, transactions, summary, username, fake_now)
+    generate_pdf(pdf_path, transactions, summary, username, fake_now)
+
+    await update.message.reply_document(document=open(xlsx_path, "rb"), filename=f"laporan_{tahun}{bulan:02d}.xlsx")
+    await update.message.reply_document(document=open(pdf_path, "rb"), filename=f"laporan_{tahun}{bulan:02d}.pdf")
+
+    os.remove(xlsx_path)
+    os.remove(pdf_path)
