@@ -1,6 +1,5 @@
 import json
-from google import genai
-from google.genai import types
+import google.generativeai as genai
 from datetime import datetime
 from bot.config import GEMINI_API_KEY, TIMEZONE
 import pytz
@@ -35,16 +34,15 @@ def _get_current_date_wib() -> str:
     return datetime.now(tz).strftime("%Y-%m-%d")
 
 def parse_transaction(user_text: str) -> dict:
-    client = genai.Client(api_key=GEMINI_API_KEY)
+    genai.configure(api_key=GEMINI_API_KEY)
+    model = genai.GenerativeModel("gemini-1.5-flash")
 
     current_date = _get_current_date_wib()
     system_prompt = SYSTEM_PROMPT_TEMPLATE.format(current_date_wib=current_date)
 
-    response = client.models.generate_content(
-        model="gemini-2.0-flash",
-        contents=user_text,
-        config=types.GenerateContentConfig(
-            system_instruction=system_prompt,
+    response = model.generate_content(
+        [system_prompt, user_text],
+        generation_config=genai.types.GenerationConfig(
             temperature=0.1,
             max_output_tokens=200,
         ),
