@@ -114,6 +114,31 @@ def get_category_summary(telegram_id: str, year: int, month: int):
     ).fetchall()
     return [dict(r) for r in rows]
 
+
+def get_multi_month_summary(telegram_id: str, num_months: int = 3):
+    from datetime import datetime, timedelta
+    import pytz
+    from bot.config import TIMEZONE
+
+    tz = pytz.timezone(TIMEZONE)
+    now = datetime.now(tz)
+    results = []
+    for i in range(num_months - 1, -1, -1):
+        year = now.year
+        month = now.month - i
+        while month < 1:
+            month += 12
+            year -= 1
+        while month > 12:
+            month -= 12
+            year += 1
+
+        summary = get_monthly_summary(telegram_id, year, month)
+        categories = get_category_summary(telegram_id, year, month)
+        month_name = datetime(year, month, 1).strftime("%B %Y")
+        results.append({"month": month_name, "summary": summary, "categories": categories})
+    return results
+
 # --- Rate Limits ---
 
 def get_rate_limit(telegram_id: str) -> dict | None:

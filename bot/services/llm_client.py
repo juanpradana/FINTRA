@@ -114,3 +114,55 @@ def generate_report_analysis(summary: dict, category_summary: list[dict], month_
     except Exception as e:
         logger.error(f"Report analysis LLM error: {e}")
         return "⚠️ Analisis AI tidak tersedia saat ini. Silakan coba lagi nanti."
+
+
+MULTI_MONTH_PROMPT = """Kamu adalah analis keuangan pribadi untuk FINTRA (Finance Tracker).
+Tugasmu menganalisis tren keuangan multi-bulan dan memberikan insight actionable.
+
+Data transaksi {num_months} bulan terakhir ({months_range}):
+
+{summary_data}
+
+Beri analisis dalam bahasa Indonesia dengan format:
+1. **Ringkasan Multi-Bulan** — Total pemasukan, pengeluaran, dan saldo per bulan.
+2. **Tren Pengeluaran** — Apakah pengeluaran membaik atau memburuk? Identifikasi pola.
+3. **Kategori Bocor Halus** — Kategori pengeluaran tertinggi secara konsisten.
+4. **Rekomendasi Konkret** — 2-3 saran spesifik untuk bulan depan berdasarkan data.
+
+Gunakan gaya ramah, singkat, langsung ke point. Jangan gunakan markdown."""
+
+
+def generate_multi_month_analysis(monthly_data: list[dict]) -> str:
+    lines = []
+    for md in monthly_data:
+        s = md["summary"]
+        balance = s["total_income"] - s["total_expense"]
+        lines.append(f"{md['month']}:")
+        lines.append(f"  Pemasukan: Rp{s['total_income']:,} | Pengeluaran: Rp{s['total_expense']:,} | Saldo: Rp{balance:,}")
+        if md["categories"]:
+            cats = ", ".join(f"{c['category']} (Rp{c['total']:,})" for c in md["categories"])
+            lines.append(f"  Kategori: {cats}")
+        lines.append("")
+
+    summary_data = "\n".join(lines).strip()
+    months_range = f"{monthly_data[0]['month']} - {monthly_data[-1]['month']}"
+    num_months = len(monthly_data)
+
+    system_prompt = MULTI_MONTH_PROMPT.format(
+        num_months=num_months, months_range=months_range, summary_data=summary_data
+    )
+
+    try:
+        response: ChatCompletion = client.chat.completions.create(
+            model="meta-llama/llama-4-scout-17b-16e-instruct",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": "Beri analisis tren keuangan 3 bulan saya."},
+            ],
+            temperature=0.2,
+            max_tokens=800,
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        logger.error(f"Multi-month LLM error: {e}")
+        return "⚠️ Analisis AI tidak tersedia saat ini. Silakan coba lagi nanti."

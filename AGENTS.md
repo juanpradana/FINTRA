@@ -56,6 +56,7 @@ SQLite file at `data/fintra.db` (configurable via `DB_PATH` env).
 | `/help` | All whitelisted | Usage doc + credits |
 | `/saldo` | All whitelisted | Balance = income - expense (current month) |
 | `/laporan` | All whitelisted | AI analysis + XLSX + PDF |
+| `/laporan3` | All whitelisted | AI analysis 3-month trend |
 | `/batal` | All whitelisted | Delete last transaction |
 | `/add <id> [username]` | Superadmin only | Whitelist user |
 | `/remove <id>` | Superadmin only | Remove user + all their data |

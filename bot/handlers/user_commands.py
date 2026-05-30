@@ -7,7 +7,7 @@ from bot.config import SUPERADMIN_ID, SUPERADMIN_USERNAME
 import pytz
 from bot.config import TIMEZONE
 
-_COMMON_BUTTONS = [["/saldo", "/laporan"], ["/batal", "/help"]]
+_COMMON_BUTTONS = [["/saldo", "/laporan"], ["/laporan3", "/batal"], ["/help"]]
 _SUPERADMIN_BUTTONS = [["/add", "/remove", "/listuser"], ["/saldo", "/laporan"], ["/batal", "/help"]]
 
 def _get_keyboard(user_id: str) -> ReplyKeyboardMarkup:
@@ -54,6 +54,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "🛠️ <b>Daftar Perintah:</b>\n"
         "/saldo - Cek akumulasi sisa dana saat ini.\n"
         "/laporan - Analisis AI + unduh rekap Excel &amp; PDF bulan berjalan.\n"
+"/laporan3 - Analisis AI tren 3 bulan terakhir.\n"
         "/batal - Menghapus catatan transaksi terakhir Anda.\n"
         "---------------------------------------\n"
         "✒️ <i>Fintra Version 1.7 | Created by Farzani R.B.A.</i>",
@@ -107,6 +108,25 @@ async def laporan(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     os.remove(xlsx_path)
     os.remove(pdf_path)
+
+async def laporan3(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = str(update.effective_user.id)
+    if not queries.is_whitelisted(user_id):
+        return
+    tz = pytz.timezone(TIMEZONE)
+    now = datetime.now(tz)
+    monthly_data = queries.get_multi_month_summary(user_id, 3)
+    has_data = any(m["summary"]["total_income"] or m["summary"]["total_expense"] for m in monthly_data)
+    if not has_data:
+        await update.message.reply_text("📭 Belum ada transaksi dalam 3 bulan terakhir.")
+        return
+
+    await update.message.reply_text("📊 Menyusun laporan 3 bulan...")
+
+    from bot.services.llm_client import generate_multi_month_analysis
+    analysis = generate_multi_month_analysis(monthly_data)
+    months_range = f"{monthly_data[0]['month']} - {monthly_data[-1]['month']}"
+    await update.message.reply_text(f"🧠 <b>Analisis {months_range}</b>\n\n{analysis}", parse_mode="HTML")
 
 async def batal(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = str(update.effective_user.id)

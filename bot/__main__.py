@@ -3,7 +3,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters
 from apscheduler.schedulers.background import BackgroundScheduler
 from bot.config import BOT_TOKEN, TIMEZONE
 from bot.handlers.admin import add_user, remove_user, list_users
-from bot.handlers.user_commands import start, help_command, saldo, laporan, batal
+from bot.handlers.user_commands import start, help_command, saldo, laporan, laporan3, batal
 from bot.handlers.messages import handle_message
 from bot.database.connection import init_db
 from bot.database.queries import reset_daily_limits
@@ -34,6 +34,7 @@ def main():
     app.add_handler(CommandHandler("help", help_command))
     app.add_handler(CommandHandler("saldo", saldo))
     app.add_handler(CommandHandler("laporan", laporan))
+    app.add_handler(CommandHandler("laporan3", laporan3))
     app.add_handler(CommandHandler("batal", batal))
     app.add_handler(CommandHandler("add", add_user))
     app.add_handler(CommandHandler("remove", remove_user))
