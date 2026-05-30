@@ -16,7 +16,7 @@ async def add_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     args = context.args
     if len(args) < 1:
-        await update.message.reply_text("Usage: /add &lt;telegram_id&gt; [username]")
+        await update.message.reply_text("Usage: /add <telegram_id> [username]")
         return
     telegram_id = args[0]
     username = args[1].lstrip("@") if len(args) > 1 else "unknown"
@@ -28,7 +28,7 @@ async def remove_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     args = context.args
     if len(args) < 1:
-        await update.message.reply_text("Usage: /remove &lt;telegram_id&gt;")
+        await update.message.reply_text("Usage: /remove <telegram_id>")
         return
     telegram_id = args[0]
     if telegram_id == SUPERADMIN_ID:
