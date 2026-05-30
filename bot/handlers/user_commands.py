@@ -130,7 +130,36 @@ async def laporan3(update: Update, context: ContextTypes.DEFAULT_TYPE):
     months_range = f"{monthly_data[0]['month']} - {monthly_data[-1]['month']}"
     await update.message.reply_text(f"🧠 <b>Analisis {months_range}</b>\n\n{analysis}", parse_mode="HTML")
 
-async def batal(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    from bot.services.report import generate_excel, generate_pdf
+    import tempfile, os
+
+    all_transactions = []
+    combined_summary = {"total_income": 0, "total_expense": 0}
+    for md in monthly_data:
+        s = md["summary"]
+        combined_summary["total_income"] += s["total_income"]
+        combined_summary["total_expense"] += s["total_expense"]
+        parts = md["month"].split()
+        month_name = parts[0]
+        year = int(parts[1])
+        month_num = {
+            "January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6,
+            "July": 7, "August": 8, "September": 9, "October": 10, "November": 11, "December": 12,
+        }[month_name]
+        all_transactions.extend(queries.get_monthly_transactions(user_id, year, month_num))
+
+    xlsx_path = os.path.join(tempfile.gettempdir(), f"fintra_3mo_{user_id}.xlsx")
+    pdf_path = os.path.join(tempfile.gettempdir(), f"fintra_3mo_{user_id}.pdf")
+    username = update.effective_user.first_name or "User"
+
+    generate_excel(xlsx_path, all_transactions, combined_summary, username, now)
+    generate_pdf(pdf_path, all_transactions, combined_summary, username, now)
+
+    await update.message.reply_document(document=open(xlsx_path, "rb"), filename=f"laporan_3bulan.xlsx")
+    await update.message.reply_document(document=open(pdf_path, "rb"), filename=f"laporan_3bulan.pdf")
+
+    os.remove(xlsx_path)
+    os.remove(pdf_path)
     user_id = str(update.effective_user.id)
     if not queries.is_whitelisted(user_id):
         return
