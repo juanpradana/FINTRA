@@ -168,3 +168,46 @@ def generate_multi_month_analysis(monthly_data: list[dict]) -> str:
     except Exception as e:
         logger.error(f"Multi-month LLM error: {e}")
         return "⚠️ Analisis AI tidak tersedia saat ini. Silakan coba lagi nanti."
+
+
+DATE_PARSE_PROMPT = """Hari ini adalah {current_date_wib} (Format: YYYY-MM-DD, Zone: UTC+7).
+
+Tugasmu adalah mengekstrak bulan dan tahun dari chat user yang meminta laporan keuangan.
+
+Aturan:
+1. Jika user menyebut nama bulan (e.g., "januari", "feb", "maret"), konversi ke angka (1-12).
+2. Jika user menyebut tahun, gunakan tahun tersebut.
+3. Jika user TIDAK menyebut tahun, gunakan tahun sekarang ({current_year}).
+4. Jika user bilang "bulan lalu" atau "kemarin", hitung relative dari hari ini.
+5. Jika tidak ada informasi bulan sama sekali, gunakan bulan dan tahun sekarang.
+
+Output HARUS berupa JSON murni:
+{{"bulan": integer_1_sampai_12, "tahun": integer_tahun}}"""
+
+
+def parse_report_date(user_text: str) -> dict:
+    current_date = _get_current_date_wib()
+    current_year = current_date[:4]
+    system_prompt = DATE_PARSE_PROMPT.format(
+        current_date_wib=current_date, current_year=current_year
+    )
+    try:
+        response: ChatCompletion = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_text},
+            ],
+            temperature=0.0,
+            max_tokens=50,
+            response_format={"type": "json_object"},
+        )
+        raw = response.choices[0].message.content.strip()
+        return json.loads(raw)
+    except Exception as e:
+        logger.error(f"Date parse LLM error: {e}")
+        from datetime import datetime
+        import pytz
+        tz = pytz.timezone(TIMEZONE)
+        now = datetime.now(tz)
+        return {"bulan": now.month, "tahun": now.year}

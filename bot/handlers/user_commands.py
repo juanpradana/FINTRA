@@ -56,7 +56,8 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
          "/saldo - Cek akumulasi sisa dana saat ini.\n"
          "/laporan - Analisis AI + unduh rekap Excel &amp; PDF bulan berjalan.\n"
          "/laporan3 - Analisis AI tren 3 bulan terakhir.\n"
-        "/batal - Menghapus catatan transaksi terakhir Anda.\n"
+         "/batal - Menghapus catatan transaksi terakhir Anda.\n\n"
+         "💬 <b>Alternatif Cepat:</b> Ketik langsung <i>\"laporan januari 2026\"</i> atau <i>\"laporan maret\"</i> untuk analisis bulan tertentu.\n"
         "---------------------------------------\n"
         "✒️ <i>Fintra Version 1.7 | Created by Farzani R.B.A.</i>",
         parse_mode="HTML",

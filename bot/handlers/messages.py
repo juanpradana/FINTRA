@@ -1,8 +1,12 @@
+from datetime import datetime
 from telegram import Update
 from telegram.ext import ContextTypes
 from bot.database import queries
-from bot.services.rate_limiter import check_burst, check_daily, record_request, is_admin_command
-from bot.services.llm_client import parse_transaction
+from bot.services.rate_limiter import check_burst, check_daily, record_request
+from bot.services.llm_client import parse_transaction, parse_report_date, generate_report_analysis
+import pytz
+from bot.config import TIMEZONE
+
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
@@ -17,6 +21,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "⚠️ <b>Mencatat Terlalu Cepat!</b> Batas maksimal input adalah 5 pesan per menit untuk menjaga stabilitas sistem. Silakan tunggu beberapa saat lagi.",
             parse_mode="HTML",
         )
+        return
+
+    if "laporan" in text.lower():
+        await _handle_laporan_text(update, user_id, text)
         return
 
     if not check_daily(user_id):
@@ -62,3 +70,26 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"• Jam: {time_part} WIB",
         parse_mode="HTML",
     )
+
+
+async def _handle_laporan_text(update: Update, user_id: str, text: str):
+    await update.message.reply_text("📊 Menyusun laporan...")
+
+    target = parse_report_date(text)
+    bulan = target["bulan"]
+    tahun = target["tahun"]
+
+    transactions = queries.get_monthly_transactions(user_id, tahun, bulan)
+    if not transactions:
+        from calendar import month_name
+        nama_bulan = month_name[bulan]
+        await update.message.reply_text(f"📭 Belum ada transaksi untuk {nama_bulan} {tahun}.")
+        return
+
+    summary = queries.get_monthly_summary(user_id, tahun, bulan)
+    category_summary = queries.get_category_summary(user_id, tahun, bulan)
+    from calendar import month_name
+    month_name_str = f"{month_name[bulan]} {tahun}"
+
+    analysis = generate_report_analysis(summary, category_summary, month_name_str)
+    await update.message.reply_text(f"🧠 <b>Analisis {month_name_str}</b>\n\n{analysis}", parse_mode="HTML")
